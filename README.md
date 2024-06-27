@@ -1,5 +1,3 @@
-Sure, here’s the README with the response parts removed:
-
 ```markdown
 # Restaurant Reservations
 
