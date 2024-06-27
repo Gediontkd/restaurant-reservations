@@ -36,7 +36,10 @@ A RESTful API for managing restaurant reservations, built with Node.js, TypeScri
    ```bash
    npm start
    ```
-
+### Database
+```bash
+DATABASE_ROOT_PASSWORD=root
+   ```
 ## Sample Test Cases
 
 ### 1. Create a User
