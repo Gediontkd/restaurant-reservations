@@ -6,7 +6,6 @@ A restaurant reservation system built with Node.js, TypeScript, and Docker.
 
 - [Installation](#installation)
 - [Running the Application](#running-the-application)
-- [Testing](#testing)
 - [Sample Test Cases](#sample-test-cases)
 
 ## Installation
@@ -21,14 +20,7 @@ A restaurant reservation system built with Node.js, TypeScript, and Docker.
    ```bash
    npm install
    ```
-
-3. **Set up environment variables:**
-   Create a `.env` file with:
-   ```plaintext
-   PORT=3000
-   DATABASE_URL=your_database_url
-   ```
-
+   
 ## Running the Application
 
 ### Using Docker
@@ -44,13 +36,6 @@ A restaurant reservation system built with Node.js, TypeScript, and Docker.
    ```bash
    npm start
    ```
-
-## Testing
-
-Run tests with:
-```bash
-npm test
-```
 
 ## Sample Test Cases
 
@@ -80,7 +65,7 @@ npm test
 {
   "email": "gedion@gmail.com",
   "date": "2024-07-01",
-  "time": "18:00",
+  "time": "19:00",
   "tableNumber": 1
 }
 ```
@@ -96,7 +81,13 @@ npm test
 }
 ```
 
-Replace placeholders like `your-username` and `your_database_url` with actual values specific to your project.
+### 4. Invalid Time
+**Request:**
+```json
+{
+  "email": "john.doe@example.com",
+  "date": "2024-07-01",
+  "time": "16:00",
+  "tableNumber": 6
+}
 ```
-
-This version keeps the README concise and to the point, focusing on installation, running, and testing instructions, along with the sample test cases.
