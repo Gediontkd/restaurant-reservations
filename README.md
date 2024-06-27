@@ -1,4 +1,3 @@
-```markdown
 # Restaurant Reservations
 
 A restaurant reservation system built with Node.js, TypeScript, and Docker.
@@ -16,7 +15,7 @@ A restaurant reservation system built with Node.js, TypeScript, and Docker.
    ```bash
    git clone https://github.com/your-username/restaurant-reservations.git
    cd restaurant-reservations
-   ```
+
 
 2. **Install dependencies:**
    ```bash
