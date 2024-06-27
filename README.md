@@ -1,6 +1,6 @@
 # Restaurant Reservations
 
-A restaurant reservation system built with Node.js, TypeScript, and Docker.
+A RESTful API for managing restaurant reservations, built with Node.js, TypeScript, and Docker.
 
 ## Table of Contents
 
