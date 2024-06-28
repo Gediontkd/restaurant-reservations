@@ -78,58 +78,66 @@ export const createReservation = async (req: Request, res: Response) => {
   }
 };
 
-// Get reservations
+// Get reservations with pagination
 export const getReservations = async (req: Request, res: Response) => {
-    const { startDate, endDate } = req.query;
-  
-    // input validation
-    if (!startDate || !endDate) {
-      return res.status(400).json({ error: 'Both startDate and endDate parameters are required' });
+  const { startDate, endDate, page = 1, limit = 10 } = req.query;
+
+  // input validation
+  if (!startDate || !endDate) {
+    return res.status(400).json({ error: 'Both startDate and endDate parameters are required' });
+  }
+
+  const pageNumber = parseInt(page as string, 10);
+  const pageSize = parseInt(limit as string, 10);
+  const skip = (pageNumber - 1) * pageSize;
+
+  try {
+    const reservationRepository = getRepository(Reservation);
+
+    const [reservations, total] = await reservationRepository.findAndCount({
+      where: {
+        startTime: Between(new Date(startDate as string), new Date(endDate as string)),
+      },
+      relations: ['user', 'table'],
+      skip: skip,
+      take: pageSize,
+    });
+
+    if (reservations.length === 0) {
+      return res.status(404).json({ message: 'No reservations found in the specified date range' });
     }
-  
-    try {
-      const reservationRepository = getRepository(Reservation);
-  
-      const reservations = await reservationRepository.find({
-        where: {
-          startTime: Between(new Date(startDate as string), new Date(endDate as string)),
+
+    // map reservations to desired response format with adjusted endtime based on seating time
+    const formattedReservations = reservations.map(reservation => {
+      const startDateTime = new Date(reservation.startTime);
+      const endDateTime = new Date(startDateTime);
+      endDateTime.setHours(endDateTime.getHours() + 1); // add one hour for seating time
+
+      return {
+        id: reservation.id,
+        startTime: reservation.startTime.toISOString(), // convert Date to ISO string
+        endTime: endDateTime.toISOString(), // convert adjusted end time to ISO string
+        user: {
+          id: reservation.user.id,
+          name: reservation.user.name,
+          email: reservation.user.email,
         },
-        relations: ['user', 'table'],
-      });
-  
-      if (reservations.length === 0) {
-        return res.status(404).json({ message: 'No reservations found in the specified date range' });
-      }
-  
-      // map reservations to desired response format with adjusted endtime based on seating time
-      const formattedReservations = reservations.map(reservation => {
-        const startDateTime = new Date(reservation.startTime);
-        const endDateTime = new Date(startDateTime);
-        endDateTime.setHours(endDateTime.getHours() + 1); // add one hour for seating time
-  
-        return {
-          id: reservation.id,
-          startTime: reservation.startTime.toISOString(), // convert Date to ISO string
-          endTime: endDateTime.toISOString(), // convert adjusted end time to ISO string
-          user: {
-            id: reservation.user.id,
-            name: reservation.user.name,
-            email: reservation.user.email,
-          },
-          table: {
-            id: reservation.table.id,
-            number: reservation.table.number,
-            seats: reservation.table.seats,
-          },
-        };
-      });
-  
-      return res.status(200).json(formattedReservations);
-    } catch (error) {
-      console.error('Error fetching reservations:', error);
-      return res.status(500).json({ error: `Error fetching reservations: ${(error as Error).message}` });
-    }
-  };
-  
-  
-  
+        table: {
+          id: reservation.table.id,
+          number: reservation.table.number,
+          seats: reservation.table.seats,
+        },
+      };
+    });
+
+    return res.status(200).json({
+      totalItems: total,
+      totalPages: Math.ceil(total / pageSize),
+      currentPage: pageNumber,
+      reservations: formattedReservations,
+    });
+  } catch (error) {
+    console.error('Error fetching reservations:', error);
+    return res.status(500).json({ error: `Error fetching reservations: ${(error as Error).message}` });
+  }
+};
